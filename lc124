@@ -1,0 +1,64 @@
+package leetcode;
+
+import java.util.*;
+
+import leetcode.lc104.TreeNode;
+
+public class lc124 {
+	
+	public class TreeNode {
+		int val;
+		TreeNode left;
+		TreeNode right;
+		TreeNode(int x) { val = x; }
+	}
+	
+	// traverse the tree with post-order
+	// use list to store the path sum of each branch
+	// and then update the tree root with adding the max sum of left and right branch
+	public int maxPathSum(TreeNode root) {
+       List<Integer> list = new ArrayList<Integer>();
+       postOrder(root,list);
+       int max = Integer.MIN_VALUE;
+       for( int i: list ) max = max>i? max : i;
+       return max;
+    }
+	
+	public void postOrder( TreeNode root,List<Integer> list){
+		if( root == null ) return;
+		postOrder(root.left,list);
+		postOrder(root.right,list);
+		int leftSum = root.left==null? 0:root.left.val;
+		int rightSum = root.right==null? 0:root.right.val;
+		int sum = root.val;
+		leftSum = leftSum>0? leftSum:0;
+		rightSum = rightSum>0? rightSum:0;
+		list.add(sum+leftSum+rightSum);
+		root.val = root.val + Math.max(leftSum>=0?leftSum:0,rightSum>=0? rightSum:0);
+	}
+	
+	int idx = 0;
+	public TreeNode createTree( String[] s ){
+		TreeNode node = null;
+		if( idx<s.length ){
+			if( s[idx]!=null ){
+				node = new TreeNode(Integer.valueOf(s[idx++]));
+				node.left = createTree(s);
+				node.right = createTree(s);
+			}
+			else idx++;
+		}
+		return node;
+	}
+	
+	public void test(){
+		String[] s = {"1","2","4",null,null,"5",null,null,"3","6",null,null,"7"};
+		//String[] s = {"1","2",null,null,"3"};
+		//String[] s = {"-1"};
+		//String[] s = {"2","-1"};
+		TreeNode root = createTree(s);
+		int res = maxPathSum(root);
+		System.out.println("res:"+res);
+	}
+
+}
